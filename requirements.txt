@@ -11,3 +11,5 @@ transformers
 protobuf==3.20.0
 accelerate
 bitsandbytes
+## added
+xformers   # Toolbox to Accelerate Research on Transformers

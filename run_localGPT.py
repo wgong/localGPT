@@ -5,7 +5,7 @@ from langchain.embeddings import HuggingFaceInstructEmbeddings
 from langchain.llms import HuggingFacePipeline
 from constants import CHROMA_SETTINGS, SOURCE_DIRECTORY, PERSIST_DIRECTORY
 from transformers import LlamaTokenizer, LlamaForCausalLM, GenerationConfig, pipeline
-
+from time import time
 
 from constants import CHROMA_SETTINGS
 
@@ -54,12 +54,14 @@ def main():
     qa = RetrievalQA.from_chain_type(llm=llm, chain_type="stuff", retriever=retriever, return_source_documents=True)
     # Interactive questions and answers
     while True:
-        query = input("\nEnter a query: ")
-        if query == "exit":
+        query = input("\nEnter a query (quit to exit): ")
+        if query in ["quit", "exit"]:
             break
         
         # Get the answer from the chain
-        res = qa(query)    
+        t1 = time()
+        res = qa(query)
+        t2 = time()
         answer, docs = res['result'], res['source_documents']
 
         # Print the result
@@ -68,12 +70,14 @@ def main():
         print("\n> Answer:")
         print(answer)
         
-        # # Print the relevant sources used for the answer
-        print("----------------------------------SOURCE DOCUMENTS---------------------------")
-        for document in docs:
-            print("\n> " + document.metadata["source"] + ":")
-            print(document.page_content)
-        print("----------------------------------SOURCE DOCUMENTS---------------------------")
+        print(f"\n\n ... Completed in {t2-t1:.2f} sec")
+
+        # # # Print the relevant sources used for the answer
+        # print("----------------------------------SOURCE DOCUMENTS---------------------------")
+        # for document in docs:
+        #     print("\n> " + document.metadata["source"] + ":")
+        #     print(document.page_content)
+        # print("----------------------------------SOURCE DOCUMENTS---------------------------")
 
 
 if __name__ == "__main__":
